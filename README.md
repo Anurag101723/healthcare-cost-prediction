@@ -1,40 +1,52 @@
-# 🏥 Healthcare Cost Prediction
+# Healthcare Cost Prediction
 
-> Predicting hospital billing costs using Random Forest and SHAP interpretability on 60,000 patient records.
-
-![Python](https://img.shields.io/badge/Python-3.12-blue?style=flat&logo=python&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.4-orange?style=flat&logo=scikit-learn&logoColor=white)
-![SHAP](https://img.shields.io/badge/SHAP-0.44-red?style=flat)
-![Status](https://img.shields.io/badge/Status-Complete-green?style=flat)
+Random Forest classifier for hospital billing classification with SHAP interpretability on 60,000 patient records.
 
 ---
 
-## 📌 Overview
+## Overview
 
-Escalating healthcare costs are a global challenge. This project develops an **interpretable machine learning framework** to predict whether a patient will fall into a **low, medium, or high cost** billing category — enabling hospitals to plan resources proactively and insurers to anticipate claims.
+Escalating healthcare costs are a persistent global challenge. This project develops an interpretable machine learning framework to classify patients into low, medium, or high billing cost categories, enabling hospitals to plan resources proactively and insurers to anticipate claims.
 
-Built as part of the M.Sc. Big Data & Business Analytics program at **FOM University of Applied Sciences, Essen**.
+The framework combines a full preprocessing pipeline, SMOTE class balancing, Random Forest classification, and SHAP post-hoc explainability to ensure predictions are both accurate and transparent.
+
+Built as part of the M.Sc. Big Data and Business Analytics program at FOM University of Applied Sciences, Essen.
 
 ---
 
-## 🎯 Key Results
+## Results
 
 | Metric | Score |
 |---|---|
-| Accuracy | **84%** |
-| ROC AUC (macro) | **0.92** |
-| Macro F1-Score | **0.81** |
-| Precision | **0.83** |
-| Recall | **0.81** |
+| Model | Random Forest Classifier |
+| Accuracy | 84% |
+| ROC AUC (macro) | 0.92 |
+| Macro F1-Score | 0.81 |
+| Precision | 0.83 |
+| Recall | 0.81 |
+
+## Class-Wise Performance
+
+| Class | Precision | Recall | F1 |
+|---|---|---|---|
+| Low Cost | 0.88 | 0.85 | 0.86 |
+| Medium Cost | 0.79 | 0.78 | 0.78 |
+| High Cost | 0.80 | 0.78 | 0.79 |
 
 ---
 
-## 📊 Dataset
+## Dataset
 
-- **Total records:** 60,000 patient episodes
-- **Real records:** 48,000 (from tertiary-care hospital administrative systems)
-- **Synthetic records:** 12,000 (generated via CTGAN to correct class imbalance)
-- **Features:** 16 variables across 4 categories
+| Property | Value |
+|---|---|
+| Total records | 60,000 patient episodes |
+| Real records | 48,000 |
+| Synthetic records | 12,000 (CTGAN, for class balancing) |
+| Features | 16 variables |
+| Target | Billing cost category (Low, Medium, High) |
+| Privacy | De-identified to GDPR standards |
+
+## Variable Categories
 
 | Category | Variables |
 |---|---|
@@ -45,83 +57,98 @@ Built as part of the M.Sc. Big Data & Business Analytics program at **FOM Univer
 
 ---
 
-## 🛠️ Tech Stack
+## Top Cost Drivers (SHAP Analysis)
 
-- **Language:** Python 3.12
-- **ML Model:** Random Forest Classifier (Scikit-learn)
-- **Interpretability:** SHAP (TreeExplainer)
-- **Preprocessing:** Pandas, NumPy, RobustScaler, SMOTE
-- **Visualisation:** Matplotlib, Seaborn
-- **Environment:** Jupyter Notebook
+| Rank | Feature | Direction |
+|---|---|---|
+| 1 | Length of Stay | Longer stays strongly predict high cost. Effect plateaus beyond 14 days |
+| 2 | Number of Procedures | Steep cost jump between 3 and 5 procedures |
+| 3 | Primary Diagnosis Group | Circulatory and respiratory conditions predict higher cost |
+| 4 | Insurance Type | Private insurance shifts prediction toward higher cost |
+| 5 | Admission Type | Emergency admissions correlate with higher predicted cost |
 
 ---
 
-## 🔍 Methodology
+## Key Findings
+
+- Private insurance patients are 28% more likely to fall in the high-cost category
+- For patients over 65, the private-public cost gap widens significantly
+- Length of stay explains the most variance but shows diminishing returns beyond 14 days
+- Medium-cost cases are the hardest to classify due to overlap with both ends
+- Administrative variables sometimes outweigh clinical severity in cost prediction
+
+---
+
+## Methodology
 
 ```
-Raw Data (60k records)
-       ↓
-Data Cleaning & Preprocessing
-(missing values, encoding, scaling, SMOTE balancing)
-       ↓
+Raw Data (60,000 records)
+
+Data Cleaning and Preprocessing
+Missing value handling, encoding, RobustScaler
+
 Feature Selection
-(Chi-square, ANOVA F-test, RF importance)
-       ↓
+Chi-square tests, ANOVA F-tests, RF importance filtering
+
+Class Balancing
+SMOTE on training set to address high-cost class imbalance
+
 Random Forest Classifier
-(5-fold CV, grid search hyperparameter tuning)
-       ↓
+5-fold cross-validation, grid search hyperparameter tuning
+n_estimators=200, max_depth=12
+
 SHAP Interpretability
-(global rankings, dependence plots, force plots)
-       ↓
-Results & Insights
+TreeExplainer, global rankings, dependence plots, force plots
+
+Evaluation
+Accuracy, ROC AUC, F1, Precision, Recall across cost classes
 ```
 
 ---
 
-## 🔑 Key Findings
+## Tech Stack
 
-- **Length of Stay (LOS)** is the strongest cost predictor — but effect plateaus beyond 14 days
-- **Procedure count** shows steep cost jumps between 3–5 procedures
-- **Insurance type** ranks 4th in importance — private insurance patients are **28% more likely** to fall in the high-cost category
-- **Elderly patients (>65)** with private insurance show the largest cost gap vs public insurance
-- **Oncology and circulatory conditions** dominate high-cost cases
+| Category | Tools |
+|---|---|
+| Language | Python 3.12 |
+| ML Model | Random Forest (Scikit-learn) |
+| Explainability | SHAP (TreeExplainer) |
+| Imbalance Handling | SMOTE (imbalanced-learn) |
+| Preprocessing | Pandas, NumPy, RobustScaler |
+| Visualisation | Matplotlib, Seaborn |
+| Environment | Jupyter Notebook |
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 healthcare-cost-prediction/
-│
-├── Healthcare_cost_investigation.ipynb   # Main analysis notebook
-├── README.md                             # Project documentation
+|
+|-- Healthcare_cost_investigation.ipynb
+|-- cleaned_healthcare_dataset.csv
+|-- eda.py
+|-- literature_review_table.xlsx
+|-- research_summary.txt
+|-- README.md
 ```
 
 ---
 
-## 🚀 How to Run
+## How to Run
 
-1. Clone the repository
 ```bash
 git clone https://github.com/Anurag101723/healthcare-cost-prediction.git
 cd healthcare-cost-prediction
-```
-
-2. Install dependencies
-```bash
 pip install pandas numpy scikit-learn shap matplotlib seaborn imbalanced-learn
-```
-
-3. Open the notebook
-```bash
 jupyter notebook Healthcare_cost_investigation.ipynb
 ```
 
 ---
 
-## 👤 Author
+## Author
 
-**Anurag Rathore**  
-M.Sc. Big Data & Business Analytics — FOM University of Applied Sciences  
-📧 anuragakrathore@gmail.com  
-🔗 [LinkedIn](https://linkedin.com/in/anurag1017) · [Portfolio](https://Anurag101723.github.io)
+Anurag Rathore  
+anuragakrathore@gmail.com  
+linkedin.com/in/anurag1017  
+anurag101723.github.io
